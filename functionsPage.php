@@ -1,6 +1,7 @@
 <?php
 
 
+// check if user is logged in
 function check_login($con)
 {
     if (isset($_SESSION['user_id'])) {
@@ -18,7 +19,7 @@ function check_login($con)
     die;
 }
 
-
+// generate random number
 function random_num($length)
 {
 

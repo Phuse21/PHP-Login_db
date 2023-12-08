@@ -5,7 +5,7 @@ $db_user = "root";
 $db_pass = "";
 $db_name = "login_db";
 
-
+// Connect with the database
 if (!$con = mysqli_connect($db_host, $db_user, $db_pass, $db_name)) {
 
     die("Failed to connect!");
