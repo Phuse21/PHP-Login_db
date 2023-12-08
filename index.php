@@ -22,7 +22,7 @@ $user_data = check_login($con);
 
     <br>
 
-    <?php echo "Hello, $user_data[user_name]"; ?>
+    <?php echo "Logged in as, $user_data[user_name]"; ?>
 
 </body>
 

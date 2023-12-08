@@ -21,15 +21,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     $_SESSION['user_id'] = $user_data['user_id'];
                     header("Location: index.php");
                     die;
+                } else {
+                    echo '<div id="box">' . "Wrong email or password" . '</div>';
                 }
             } else {
-                echo "Wrong email or password!";
+                echo '<div id="box">' . "Wrong email or password" . '</div>';
             }
         }
 
 
     } else {
-        echo "Enter valid information!";
+        echo '<div id="box">' . "Invalid input" . '</div>';
     }
 }
 
@@ -55,14 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     }
 
-    #button {
-        padding: 10px;
-        width: 100px;
-        color: white;
-        background-color: lightblue;
-        border: none;
 
-    }
 
     #box {
         background-color: #f9d6b9;
@@ -81,7 +76,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <div style="font-size: 20px; margin: 10px;">Login</div>
             <input id="text" type="text" name="email" placeholder="Enter your Email"> <br><br>
             <input id="text" type="password" name="password" placeholder="Enter your Password"> <br><br>
-            <input id="button" type="submit" value="Login"> <br><br>
+            <button class="signup-button" style="padding: 10px;
+        width: 100px;
+        color: black;
+        background-color: lightblue;
+        border: none;
+                cursor: pointer;"
+                onmouseover="this.style.backgroundColor='white'; this.style.color='#551a8b'; this.style.fontWeight='bold';"
+                onmouseout="this.style.backgroundColor='lightblue'; this.style.border= 'none'; this.style.color='black'; this.style.fontWeight='normal';">
+                Login
+            </button> <br><br>
             <a href="signUpPage.php"> Don't have an account? Signup</a> <br><br>
         </form>
 
