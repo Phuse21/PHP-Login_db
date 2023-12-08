@@ -15,7 +15,18 @@ $user_data = check_login($con);
 </head>
 
 <body>
-    <a href="loginPage.php"> Logout </a>
+    <button class="Logout-button" style="padding: 10px;
+        width: 100px;
+        color: black;
+        background-color: lightblue;
+        border: none;
+                cursor: pointer;"
+        onmouseover="this.style.backgroundColor='white'; this.style.color='#551a8b'; this.style.fontWeight='bold';"
+        onmouseout="this.style.backgroundColor='lightblue'; this.style.border= 'none'; this.style.color='black'; this.style.fontWeight='normal';">
+        <a href="loginPage.php"> Logout </a> <br><br>
+
+    </button>
+
 
 
     <h1> This is the main page</h1>
