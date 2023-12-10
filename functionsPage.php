@@ -19,6 +19,7 @@ function check_login($con)
     die;
 }
 
+
 // generate random number
 function random_num($length)
 {
@@ -35,4 +36,5 @@ function random_num($length)
     }
     return $text;
 }
+
 ?>
