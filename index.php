@@ -3,18 +3,18 @@ session_start();
 
 include("connectionPage.php");
 include("functionsPage.php");
-
+if (isset($_SESSION['successMessage'])) {
+    $successMessage = $_SESSION['successMessage'];
+    unset($_SESSION['successMessage']); // unset the session variable after displaying the message
+    echo '<div  style="color: lightgreen;">' . $successMessage . '</div>';
+    header("refresh:3;url=index.php"); // Redirect to index.php after 10 seconds
+}
 
 
 $user_data = check_login($con);
 ?>
 
-<?php
-if (isset($_GET['successMessage'])) {
-    $successMessage = $_GET['successMessage'];
-    echo '<div id="box" style="color: green;">' . htmlspecialchars($successMessage) . '</div>';
-}
-?>
+
 
 <!DOCTYPE html>
 <html>

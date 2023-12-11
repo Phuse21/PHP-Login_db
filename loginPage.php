@@ -22,10 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if ($result && mysqli_num_rows($result) > 0) {
                 $user_data = mysqli_fetch_assoc($result);
                 if (password_verify($enteredPassword, $user_data['password'])) {
-                    // Set the success message as a query parameter in the URL
-                    $successMessage = "Login successful";
-                    header("Location: index.php?successMessage=" . urlencode($successMessage));
-                    exit();
+                    $_SESSION['user_id'] = $user_data['user_id'];
+                    $_SESSION['successMessage'] = "Login successful";
+                    header("Location: index.php");
+                    die;
                 } else {
                     echo '<div id="box">' . "Wrong email or password" . '</div>';
                 }
