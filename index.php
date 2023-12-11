@@ -7,7 +7,7 @@ if (isset($_SESSION['successMessage'])) {
     $successMessage = $_SESSION['successMessage'];
     unset($_SESSION['successMessage']); // unset the session variable after displaying the message
     echo '<div  style="color: lightgreen;">' . $successMessage . '</div>';
-    header("refresh:3;url=index.php"); // Redirect to index.php after 10 seconds
+    header("refresh:2;url=index.php"); // Redirect to index.php after 10 seconds
 }
 
 

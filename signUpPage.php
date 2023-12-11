@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     echo '<div id="box">' . "Passwords do not match" . '</div>';
                 } else
 
-                    if (!empty($email) && !empty($phone_number) && !empty($first_name) && !empty($last_name) && !empty($gender) && !empty($date_of_birth) && !empty($user_name) && !empty($password) && !is_numeric($user_name) && !is_numeric($email) && $password == $confirm_password) {
+                    if (!is_numeric($user_name) && !is_numeric($email) && $password == $confirm_password) {
                         // Check if the password meets the strength criteria
                         $hasUppercase = preg_match('/[A-Z]/', $password);
                         $hasLowercase = preg_match('/[a-z]/', $password);
@@ -262,10 +262,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         <form method="post">
             <div style="font-size: 20px; margin: 10px;">Signup</div>
-            <input id="email" type="text" name="email" placeholder="Enter your Email"> <br><br>
-            <input id="phone_number" type="text" name="phone_number" placeholder="Enter your Phone Number"> <br><br>
-            <input id="first_name" type="text" name="first_name" placeholder="Enter First Name"> <br><br>
-            <input id="last_name" type="text" name="last_name" placeholder="Enter Last Name"> <br><br>
+            <input id="email" type="text" name="email" placeholder="Enter your Email" required> <br><br>
+            <input id="phone_number" type="text" name="phone_number" placeholder="Enter your Phone Number" required>
+            <br><br>
+            <input id="first_name" type="text" name="first_name" placeholder="Enter First Name" required> <br><br>
+            <input id="last_name" type="text" name="last_name" placeholder="Enter Last Name" required> <br><br>
             <div>
                 <input type="radio" id="male" name="gender" value="male" checked>
                 <label for="male">Male</label>
@@ -276,8 +277,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             </div><br><br>
             <label for="date_of_birth">Date of birth:</label>
             <input type="date" id="date_of_birth" name="date_of_birth"> <br><br>
-            <input id="user_name" type="text" name="user_name" placeholder="Enter User Name"> <br><br>
-            <input type="password" id="password_validation" name="password" placeholder="Enter Password">
+            <input id="user_name" type="text" name="user_name" placeholder="Enter User Name" required> <br><br>
+            <input type="password" id="password_validation" name="password" placeholder="Enter Password" required>
             <div class="password-strength">
                 <ul>
                     <li><span></span>Uppercase</li>
@@ -287,8 +288,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     <li><span></span>8 or more characters</li>
                 </ul>
             </div><br><br>
-            <input id="confirm_password" type="password" name="confirm_password"
-                placeholder="Confirm your Password"><br><br>
+            <input id="confirm_password" type="password" name="confirm_password" placeholder="Confirm your Password"
+                required><br><br>
 
 
             <button class="signup-button" style="padding: 10px;
@@ -311,7 +312,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <script>
     const passwordInput = document.getElementById('password_validation');
     const passwordStrength = document.querySelector('.password-strength');
-    const signUpButton = document.querySelector('.signup-button');
+
 
     passwordInput.addEventListener('focus', function() {
         passwordStrength.style.display = 'inline-block';

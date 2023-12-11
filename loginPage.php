@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $email = $_POST['email'];
     $enteredPassword = $_POST['password'];
 
-    if (!empty($email) && !empty($enteredPassword) && !is_numeric($email)) {
+    if (!is_numeric($email)) {
         //read from database
         //$query = "select * from users where email = '$email' limit 1";
         $query = "select * from users where email = '$email' limit 1";
@@ -82,8 +82,8 @@ if (isset($_GET['successMessage'])) {
 
         <form method="post">
             <div style="font-size: 20px; margin: 10px;">Login</div>
-            <input id="text" type="text" name="email" placeholder="Enter your Email"> <br><br>
-            <input id="text" type="password" name="password" placeholder="Enter your Password"> <br><br>
+            <input id="text" type="text" name="email" placeholder="Enter your Email" required> <br><br>
+            <input id="text" type="password" name="password" placeholder="Enter your Password" required> <br><br>
             <button class="signup-button" style="padding: 10px;
         width: 100px;
         color: black;
