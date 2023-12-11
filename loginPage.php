@@ -4,23 +4,28 @@ session_start();
 include("connectionPage.php");
 include("functionsPage.php");
 
+// Check if a success message is present in the query parameters
+
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     //something was posted
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $enteredPassword = $_POST['password'];
 
-    if (!empty($email) && !empty($password) && !is_numeric($email)) {
+    if (!empty($email) && !empty($enteredPassword) && !is_numeric($email)) {
         //read from database
+        //$query = "select * from users where email = '$email' limit 1";
         $query = "select * from users where email = '$email' limit 1";
 
         $result = mysqli_query($con, $query);
         if ($result) {
             if ($result && mysqli_num_rows($result) > 0) {
                 $user_data = mysqli_fetch_assoc($result);
-                if ($user_data['password'] === $password) {
-                    $_SESSION['user_id'] = $user_data['user_id'];
-                    header("Location: index.php");
-                    die;
+                if (password_verify($enteredPassword, $user_data['password'])) {
+                    // Set the success message as a query parameter in the URL
+                    $successMessage = "Login successful";
+                    header("Location: index.php?successMessage=" . urlencode($successMessage));
+                    exit();
                 } else {
                     echo '<div id="box">' . "Wrong email or password" . '</div>';
                 }
@@ -28,14 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 echo '<div id="box">' . "Wrong email or password" . '</div>';
             }
         }
-
-
     } else {
         echo '<div id="box">' . "Invalid input" . '</div>';
     }
 }
-
 ?>
+
+<?php
+if (isset($_GET['successMessage'])) {
+    $successMessage = $_GET['successMessage'];
+    echo '<div id="box" style="color:grey;">' . $successMessage . '</div>';
+} ?>
 
 <!DOCTYPE html>
 <html>

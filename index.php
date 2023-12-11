@@ -4,7 +4,16 @@ session_start();
 include("connectionPage.php");
 include("functionsPage.php");
 
+
+
 $user_data = check_login($con);
+?>
+
+<?php
+if (isset($_GET['successMessage'])) {
+    $successMessage = $_GET['successMessage'];
+    echo '<div id="box" style="color: green;">' . htmlspecialchars($successMessage) . '</div>';
+}
 ?>
 
 <!DOCTYPE html>

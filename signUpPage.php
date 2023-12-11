@@ -4,6 +4,14 @@ session_start();
 include("connectionPage.php");
 include("functionsPage.php");
 
+// Check if an error message is stored in the session
+if (isset($_SESSION['error_message'])) {
+    echo '<div id="box">' . $_SESSION['error_message'] . '</div>';
+    unset($_SESSION['error_message']); // Clear the error message from the session
+}
+
+
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     //something was posted
     $email = $_POST['email'];
@@ -16,13 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Check if the password meets the strength criteria
-    $hasUppercase = preg_match('/[A-Z]/', $password);
-    $hasLowercase = preg_match('/[a-z]/', $password);
-    $hasNumber = preg_match('/[0-9]/', $password);
-    $hasSymbol = preg_match('/[!@#$%^&*()_+\-=[\]{};:\'\\\\"|,.<>\/?]/', $password);
-    $hasMinLength = strlen($password) >= 8;
 
+
+    //Encrypt password
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     $query = "SELECT * FROM users WHERE email = '$email'";
     $result = mysqli_query($con, $query);
@@ -59,30 +64,65 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (mysqli_num_rows($result) > 0) {
                 echo '<div id="box">' . "Phone number already exists" . '</div>';
             } else
-                if (!$hasUppercase || !$hasLowercase || !$hasNumber || !$hasSymbol || !$hasMinLength) {
+                /*if (!$hasUppercase || !$hasLowercase || !$hasNumber || !$hasSymbol || !$hasMinLength) {
                     echo '<div id="box">' . "Password does not meet the strength criteria" . '</div>';
 
+                } else*/
+                if ($password != $confirm_password) {
+                    echo '<div id="box">' . "Passwords do not match" . '</div>';
                 } else
-                    if ($password != $confirm_password) {
-                        echo '<div id="box">' . "Passwords do not match" . '</div>';
-                    } else
 
-                        if (!empty($email) && !empty($phone_number) && !empty($first_name) && !empty($last_name) && !empty($gender) && !empty($date_of_birth) && !empty($user_name) && !empty($password) && !is_numeric($user_name) && !is_numeric($email) && $password == $confirm_password) {
-                            //save to database
+                    if (!empty($email) && !empty($phone_number) && !empty($first_name) && !empty($last_name) && !empty($gender) && !empty($date_of_birth) && !empty($user_name) && !empty($password) && !is_numeric($user_name) && !is_numeric($email) && $password == $confirm_password) {
+                        // Check if the password meets the strength criteria
+                        $hasUppercase = preg_match('/[A-Z]/', $password);
+                        $hasLowercase = preg_match('/[a-z]/', $password);
+                        $hasNumber = preg_match('/[0-9]/', $password);
+                        $hasSymbol = preg_match('/[!@#$%^&*()_+\-=[\]{};:\'\\\\"|,.<>\/?]/', $password);
+                        $hasMinLength = strlen($password) >= 8;
 
-                            $user_id = random_num(20);
-                            $query = "insert into users (user_id, email, phone_number, first_name, last_name, gender, date_of_birth,  user_name, password) values ('$user_id', '$email', '$phone_number', '$first_name', '$last_name', '$gender', '$date_of_birth', '$user_name', '$password')";
+                        if (!$hasUppercase || !$hasLowercase || !$hasNumber || !$hasSymbol || !$hasMinLength) {
 
-                            mysqli_query($con, $query);
+                            // Store the error message in the session
+                            $_SESSION['error_message'] = "Password does not meet the strength criteria";
 
-                            header("Location: loginPage.php");
+                            // Redirect to login page
+                            header("Location: signUpPage.php");
 
 
+                            exit();
+                        } else
+                            if ($hasUppercase && $hasLowercase && $hasNumber && $hasSymbol && $hasMinLength) {
+                                // Display success message
+                                echo '<div id="box" style="color:green">' . "Account created" . '</div>';
+                            }
+
+                        //save to database
+
+                        $user_id = random_num(20);
+                        $query = "INSERT INTO users (user_id, email, phone_number, first_name, last_name, gender, date_of_birth, user_name, password) VALUES ('$user_id', '$email', '$phone_number', '$first_name', '$last_name', '$gender', '$date_of_birth', '$user_name', '$hashedPassword')";
+
+                        if (mysqli_query($con, $query) && $hasUppercase && $hasLowercase && $hasNumber && $hasSymbol && $hasMinLength) {
+
+                            // Set the success message in a query parameter
+                            $successMessage = "Account created successfully";
+                            $redirectUrl = "loginPage.php?successMessage=" . urlencode($successMessage);
+
+                            // Delay redirect
+                            sleep(2); // 2 seconds
+
+
+
+                            // Redirect to the login page with the success message
+                            header("Location: " . $redirectUrl);
+                            exit();
                         } else {
-                            echo '<div id="box">' . "Invalid input" . '</div>';
-                        } {
-            }
+                            // Display an error message if the account creation fails
+                            echo "Error: " . mysqli_error($connection);
+                        }
 
+                    } else {
+                        echo '<div id="box">' . "Invalid input" . '</div>';
+                    }
         }
     }
 }
@@ -184,7 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     .password-strength ul li {
-
+        font-size: 12px;
         color: red;
         font-weight: 50;
     }
@@ -237,7 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <label for="date_of_birth">Date of birth:</label>
             <input type="date" id="date_of_birth" name="date_of_birth"> <br><br>
             <input id="user_name" type="text" name="user_name" placeholder="Enter User Name"> <br><br>
-            <input id="password_validation" type="password" name="password" placeholder="Enter Password">
+            <input type="password" id="password_validation" name="password" placeholder="Enter Password">
             <div class="password-strength">
                 <ul>
                     <li><span></span>Uppercase</li>
@@ -259,9 +299,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 cursor: pointer;"
                 onmouseover="this.style.backgroundColor='white'; this.style.color='#551a8b'; this.style.fontWeight='bold';"
                 onmouseout="this.style.backgroundColor='lightblue'; this.style.border= 'none'; this.style.color='black'; this.style.fontWeight='normal';">
-                Login
+                Signup
             </button> <br><br>
             <a href="loginPage.php"> Already created an account? Login</a> <br><br>
+
         </form>
 
 
