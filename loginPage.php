@@ -4,7 +4,15 @@ session_start();
 include("connectionPage.php");
 include("functionsPage.php");
 
-// Check if a success message is present in the query parameters
+// Check if an error message is stored in the session
+if (isset($_SESSION['error_message'])) {
+    echo '<div id="box">' . $_SESSION['error_message'] . '</div>';
+    unset($_SESSION['error_message']); // Clear the error message from the session
+}
+
+
+$email = $password = "";
+$email_error = $password_error = "";
 
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -14,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     if (!is_numeric($email)) {
         //read from database
-        //$query = "select * from users where email = '$email' limit 1";
+
         $query = "select * from users where email = '$email' limit 1";
 
         $result = mysqli_query($con, $query);
@@ -27,10 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     header("Location: index.php");
                     die;
                 } else {
-                    echo '<div id="box">' . "Wrong email or password" . '</div>';
+                    $password_error = "Wrong Password";
                 }
             } else {
-                echo '<div id="box">' . "Wrong email or password" . '</div>';
+                $email_error = "User not found";
             }
         }
     } else {
@@ -65,6 +73,35 @@ if (isset($_GET['successMessage'])) {
 
     }
 
+    #email {
+        height: 25px;
+        border-radius: 5px;
+        padding: 4px;
+        border: solid thin;
+        width: 100%;
+
+
+
+    }
+
+    #password {
+        height: 25px;
+        border-radius: 5px;
+        padding: 4px;
+        border: solid thin;
+        width: 100%;
+    }
+
+    .error {
+        color: #af4242;
+        background-color: #f9d6b9;
+        border-radius: 3px;
+
+        font-size: 14px;
+        width: 290px;
+
+    }
+
 
 
     #box {
@@ -82,8 +119,16 @@ if (isset($_GET['successMessage'])) {
 
         <form method="post">
             <div style="font-size: 20px; margin: 10px;">Login</div>
-            <input id="text" type="text" name="email" placeholder="Enter your Email" required> <br><br>
-            <input id="text" type="password" name="password" placeholder="Enter your Password" required> <br><br>
+            <p class="error email-error">
+                <?php echo $email_error; ?>
+            </p>
+            <input id="email" type="text" name="email" placeholder="Enter your Email" value="<?php echo $email; ?>"
+                required><br><br>
+            <p class="error password-error">
+                <?php echo $password_error; ?>
+            </p>
+            <input type="password" id="password" name="password" placeholder="Enter Password"
+                value="<?php echo $password; ?>" required> <br><br>
             <button class="signup-button" style="padding: 10px;
         width: 100px;
         color: black;

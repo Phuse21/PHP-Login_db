@@ -12,6 +12,17 @@ if (isset($_SESSION['error_message'])) {
 
 
 
+
+// Initialize variables
+$email = $phone_number = $first_name = $last_name = $gender = $date_of_birth = $user_name = $password = $confirm_password = '';
+$email_error = $email_error1 = $phone_number_error = $user_name_error = $password_error = $confirm_password_error = '';
+$hashedPassword = '';
+$hasUppercase = false;
+$hasLowercase = false;
+$hasNumber = false;
+$hasSymbol = false;
+$hasMinLength = false;
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     //something was posted
     $email = $_POST['email'];
@@ -31,70 +42,56 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     $query = "SELECT * FROM users WHERE email = '$email'";
     $result = mysqli_query($con, $query);
+    // Check if email is valid
     if (filter_var($email, FILTER_VALIDATE_EMAIL) === false && !empty($email)) {
-        echo '<div id="box">' . "Invalid email" . '</div>';
+        $email_error = "Invalid email";
     } else {
-        error_log('Email is valid');
-    }
-    ;
 
 
-    //check if user exists
-    $query = "SELECT * FROM users WHERE email = '$email'";
-    $result = mysqli_query($con, $query);
-
-    if (mysqli_num_rows($result) > 0) {
-        echo '<div id="box">' . "User already exists" . '</div>';
-    } else {
-        // Check if username is already in the database
-        $query = "SELECT * FROM users WHERE user_name = '$user_name'";
+        // Check if email is already in use
+        $query = "SELECT * FROM users WHERE email = '$email'";
         $result = mysqli_query($con, $query);
 
-
-
-
-
         if (mysqli_num_rows($result) > 0) {
-            echo '<div id="box">' . "Username has already been taken" . '</div>';
+            $email_error1 = "Email address is already in use";
+
         } else {
+            // Check if username is already in the database
+            $query = "SELECT * FROM users WHERE user_name = '$user_name'";
+            $result = mysqli_query($con, $query);
+
+            if (mysqli_num_rows($result) > 0) {
+                $user_name_error = "Username has already been taken";
+
+            }
             // Check if phone number is already in the database
             $query = "SELECT * FROM users WHERE phone_number = '$phone_number'";
             $result = mysqli_query($con, $query);
 
             if (mysqli_num_rows($result) > 0) {
-                echo '<div id="box">' . "Phone number already exists" . '</div>';
-            } else
-                /*if (!$hasUppercase || !$hasLowercase || !$hasNumber || !$hasSymbol || !$hasMinLength) {
-                    echo '<div id="box">' . "Password does not meet the strength criteria" . '</div>';
+                $phone_number_error = "Phone number already exists";
 
-                } else*/
-                if ($password != $confirm_password) {
-                    echo '<div id="box">' . "Passwords do not match" . '</div>';
-                } else
+            } else {
 
-                    if (!is_numeric($user_name) && !is_numeric($email) && $password == $confirm_password) {
-                        // Check if the password meets the strength criteria
-                        $hasUppercase = preg_match('/[A-Z]/', $password);
-                        $hasLowercase = preg_match('/[a-z]/', $password);
-                        $hasNumber = preg_match('/[0-9]/', $password);
-                        $hasSymbol = preg_match('/[!@#$%^&*()_+\-=[\]{};:\'\\\\"|,.<>\/?]/', $password);
-                        $hasMinLength = strlen($password) >= 8;
+                // Check if the password meets the strength criteria
+                $hasUppercase = preg_match('/[A-Z]/', $password);
+                $hasLowercase = preg_match('/[a-z]/', $password);
+                $hasNumber = preg_match('/[0-9]/', $password);
+                $hasSymbol = preg_match('/[!@#$%^&*()_+\-=[\]{};:\'\\\\"|,.<>\/?]/', $password);
+                $hasMinLength = strlen($password) >= 8;
 
-                        if (!$hasUppercase || !$hasLowercase || !$hasNumber || !$hasSymbol || !$hasMinLength) {
+                if (!$hasUppercase || !$hasLowercase || !$hasNumber || !$hasSymbol || !$hasMinLength) {
+                    $password_error = "Password does not meet the strength criteria";
 
-                            // Store the error message in the session
-                            $_SESSION['error_message'] = "Password does not meet the strength criteria";
-
-                            // Redirect to login page
-                            header("Location: signUpPage.php");
+                } else {
 
 
-                            exit();
-                        } else
-                            if ($hasUppercase && $hasLowercase && $hasNumber && $hasSymbol && $hasMinLength) {
-                                // Display success message
-                                echo '<div id="box" style="color:green">' . "Account created" . '</div>';
-                            }
+                    if ($password != $confirm_password) {
+                        $confirm_password_error = "Passwords do not match";
+
+                    } else {
+
+
 
                         //save to database
 
@@ -117,12 +114,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                             exit();
                         } else {
                             // Display an error message if the account creation fails
-                            echo "Error: " . mysqli_error($connection);
+                            echo "Error: " . mysqli_error($con);
                         }
-
-                    } else {
-                        echo '<div id="box">' . "Invalid input" . '</div>';
                     }
+                }
+            }
         }
     }
 }
@@ -139,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
     <title>Signup</title>
-</head>
+    < </head>
 
 <body>
     <style type="text/css">
@@ -151,7 +147,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         width: 100%;
 
 
+
     }
+
 
     #phone_number {
         height: 25px;
@@ -169,6 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         padding: 4px;
         border: solid thin;
         width: 100%;
+
 
 
     }
@@ -209,6 +208,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         padding: 4px;
         border: solid thin;
         width: 100%;
+    }
+
+    .error {
+        color: #af4242;
+        background-color: #f9d6b9;
+        border-radius: 3px;
+
+        font-size: 14px;
+        width: 290px;
+
     }
 
 
@@ -260,13 +269,26 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     <div id="box">
 
-        <form method="post">
+        <form action="" method="post">
             <div style="font-size: 20px; margin: 10px;">Signup</div>
-            <input id="email" type="text" name="email" placeholder="Enter your Email" required> <br><br>
-            <input id="phone_number" type="text" name="phone_number" placeholder="Enter your Phone Number" required>
+            <p class="error email-error">
+                <?php echo $email_error1; ?>
+            </p>
+            <input id="email" type="text" name="email" placeholder="Enter your Email" value="<?php echo $email; ?>"
+                required>
+
+            <p class="error phone_number-error">
+                <?php echo $phone_number_error; ?>
+            </p>
+            <input id="phone_number" type="text" name="phone_number" placeholder="Enter your Phone Number"
+                value="<?php echo $phone_number; ?>" required> <br><br>
+
+            <input id="first_name" type="text" name="first_name" placeholder="Enter First Name"
+                value="<?php echo $first_name; ?>" required>
             <br><br>
-            <input id="first_name" type="text" name="first_name" placeholder="Enter First Name" required> <br><br>
-            <input id="last_name" type="text" name="last_name" placeholder="Enter Last Name" required> <br><br>
+            <input id="last_name" type="text" name="last_name" placeholder="Enter Last Name"
+                value="<?php echo $last_name; ?>" required>
+            <br><br>
             <div>
                 <input type="radio" id="male" name="gender" value="male" checked>
                 <label for="male">Male</label>
@@ -276,9 +298,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <label for="female">Female</label>
             </div><br><br>
             <label for="date_of_birth">Date of birth:</label>
-            <input type="date" id="date_of_birth" name="date_of_birth"> <br><br>
-            <input id="user_name" type="text" name="user_name" placeholder="Enter User Name" required> <br><br>
-            <input type="password" id="password_validation" name="password" placeholder="Enter Password" required>
+            <input type="date" id="date_of_birth" name="date_of_birth" required> <br><br>
+            <p class="error user_name-error">
+                <?php echo $user_name_error; ?>
+            </p>
+            <input id="user_name" type="text" name="user_name" placeholder="Enter User Name"
+                value="<?php echo $user_name; ?>" required>
+
+            <p class="error password-error">
+                <?php echo $password_error; ?>
+            </p>
+            <input type="password" id="password_validation" name="password" placeholder="Enter Password"
+                value="<?php echo $password; ?>" required>
+
             <div class="password-strength">
                 <ul>
                     <li><span></span>Uppercase</li>
@@ -286,10 +318,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     <li><span></span>Number</li>
                     <li><span></span>Special Character</li>
                     <li><span></span>8 or more characters</li>
-                </ul>
-            </div><br><br>
+                </ul><br>
+            </div>
+            <p class="error confirm_password-error">
+                <?php echo $confirm_password_error; ?>
+            </p>
             <input id="confirm_password" type="password" name="confirm_password" placeholder="Confirm your Password"
-                required><br><br>
+                value="<?php echo $confirm_password; ?>" required> <br><br>
+
 
 
             <button class="signup-button" style="padding: 10px;
@@ -305,6 +341,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <a href="loginPage.php"> Already created an account? Login</a> <br><br>
 
         </form>
+
+
 
 
     </div>
